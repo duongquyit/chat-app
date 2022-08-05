@@ -1,0 +1,46 @@
+<template>
+  <div
+    class="chat-message-header"
+    :class="{ borderDarkModeBottom: isDarkMode }"
+  >
+    <img
+      v-show="chatMessageHeaderAvatar"
+      :src="chatMessageHeaderAvatar"
+      alt=""
+    />
+    <span>{{ chatMessageHeaderName }}</span>
+  </div>
+</template>
+
+<script>
+import { isDarkMode } from "../../composables/GlobalVariables";
+export default {
+  name: "MessageHeader",
+  props: ["chatMessageHeaderAvatar", "chatMessageHeaderName"],
+  setup() {
+    return { isDarkMode };
+  },
+};
+</script>
+
+<style>
+.chat-message-header {
+  width: 100%;
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+  padding: 0 1em;
+  height: 10%;
+}
+
+.chat-message-header span {
+  font-family: system-ui;
+  padding: 0.5em;
+}
+
+.chat-message-header img {
+  width: 2.5em;
+  height: 2.5em;
+  border-radius: 100px;
+}
+</style>
