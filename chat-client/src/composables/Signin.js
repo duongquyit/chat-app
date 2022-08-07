@@ -2,9 +2,9 @@ import { socket } from '@/plugins/socket';
 
 import { FacebookAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { ref } from 'vue';
-import { auth } from '../config/firebase';
+import { auth } from '@config/firebase';
 
-import router from '../router/index';
+import router from '@router/index';
 
 const isPending = ref(false);
 const errorMessage = ref("");

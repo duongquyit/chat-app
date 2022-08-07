@@ -1,8 +1,8 @@
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
 import { ref } from 'vue';
-import { auth } from '../config/firebase';
+import { auth } from '@config/firebase';
 
-import router from '../router';
+import router from '@router';
 
 const errorMessage = ref("");
 const isPending = ref(false);

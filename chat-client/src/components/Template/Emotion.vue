@@ -7,20 +7,20 @@
         v-for="emotion in emotionsCode"
         :key="emotion"
         v-html="emotion"
-        @click="handleClickEmotion(emotion)"
+        @click="handleClickEmotion(emotion, textInput)"
       ></span>
     </div>
   </div>
 </template>
 
 <script>
-import { emotionsCode } from "../../composables/CharCodeEmoji";
+import { emotionsCode } from "@composables/CharCodeEmoji";
 export default {
   name: "EmotionTemplate",
   props: ["isShowEmotions", "textInput"],
   setup(props, { emit }) {
-    const handleClickEmotion = (emotion) => {
-      emit("addEmotion", emotion, props.textInput);
+    const handleClickEmotion = (emotion, textInput) => {
+      emit("addEmotion", emotion, textInput);
     };
     return { emotionsCode, handleClickEmotion };
   },
@@ -28,42 +28,5 @@ export default {
 </script>
 
 <style>
-.list-enimotion {
-  position: absolute;
-  background: white;
-  border-radius: 5px;
-  top: -225px;
-  left: -7px;
-  box-shadow: rgb(0 0 0 / 18%) 0px 10px 18px;
-}
-
-.emotion-item::after {
-  content: " ";
-  position: absolute;
-  border-width: 10px;
-  border-style: solid;
-  border-color: white transparent transparent transparent;
-  bottom: -20px;
-  left: 20px;
-}
-
-.emotion-item {
-  padding: 0.5em;
-  width: 300px;
-  height: 220px;
-  overflow: auto;
-  text-align: center;
-}
-
-.emotion {
-  font-size: 1.5em;
-  padding: 0.46em;
-  display: inline-block;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.emotion:hover {
-  background: #80808026;
-}
+@import "@assets/style/emotion.css";
 </style>

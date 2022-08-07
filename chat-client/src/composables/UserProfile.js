@@ -1,7 +1,7 @@
-import { socket } from '@/plugins/socket';
-import { updateProfile } from 'firebase/auth';
-import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
+import { socket } from '@plugins/socket';
+import { auth, db } from '@config/firebase';
+import { updateProfile } from '@firebase/auth';
+import { collection, doc, getDocs, query, updateDoc, where } from '@firebase/firestore';
 
 const messageRef = collection(db, 'messages');
 

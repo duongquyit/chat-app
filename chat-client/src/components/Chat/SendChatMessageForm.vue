@@ -10,8 +10,8 @@
       <span
         class="chat-form-emotion"
         v-html="emotionIcon"
-        @mouseleave="handleChangeEmotionIcon"
-        @click="isShowEmotions = !isShowEmotions"
+        @mouseleave="handleMouseLeaveEmotionIcon"
+        @click="handleClickEmotion"
       ></span>
       <div
         class="input-text-message"
@@ -21,7 +21,7 @@
         placeholder="Text message"
         aria-multiline="true"
         spellcheck="false"
-        @keydown="$emit('changeTextMessage', $event, chatScrollBar)"
+        @keydown="handleKeyDownTextInput"
       ></div>
       <button type="submit" :class="{ darkMode: isDarkMode }">
         <i class="fa-solid fa-paper-plane"></i>
@@ -32,23 +32,31 @@
 
 <script>
 import { ref } from "@vue/reactivity";
-import { isDarkMode } from "../../composables/GlobalVariables";
-import { emotionsCode } from "../../composables/CharCodeEmoji";
 import { watch } from "@vue/runtime-core";
+import { isDarkMode } from "@composables/GlobalVariables";
+import { emotionsCode } from "@composables/CharCodeEmoji";
 
 export default {
   name: "SendChatMessageForm",
   props: ["chatScrollBar"],
-  setup() {
+  setup(props, { emit }) {
     const textInput = ref(null);
     const isShowEmotions = ref(false);
     const emotionIcon = ref(
       emotionsCode[Math.floor(Math.random() * emotionsCode.length)]
     );
 
-    const handleChangeEmotionIcon = () => {
+    const handleMouseLeaveEmotionIcon = () => {
       emotionIcon.value =
         emotionsCode[Math.floor(Math.random() * emotionsCode.length)];
+    };
+
+    const handleClickEmotion = () => {
+      isShowEmotions.value = !isShowEmotions.value;
+    };
+
+    const handleKeyDownTextInput = (evt) => {
+      emit("changeTextMessage", evt, props.chatScrollBar);
     };
 
     // event click outside emotion table and close this
@@ -74,76 +82,14 @@ export default {
       textInput,
       emotionIcon,
       isShowEmotions,
-      handleChangeEmotionIcon,
+      handleMouseLeaveEmotionIcon,
+      handleClickEmotion,
+      handleKeyDownTextInput,
     };
   },
 };
 </script>
 
 <style>
-.chat-message-form {
-  width: 100%;
-  padding: 0.5em 0em;
-}
-
-.chat-message-form form {
-  width: 100%;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: flex-end;
-  position: relative;
-}
-
-.chat-message-form form input {
-  width: 85%;
-  padding: 0.5em 1em;
-  font-size: 1em;
-  border: 1px solid var(--border-color);
-  border-radius: 30px;
-  color: #000000bf;
-  font-family: system-ui;
-  outline: none;
-}
-
-.input-text-message {
-  max-width: 85%;
-  width: 85%;
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  font-size: 1em;
-  padding: 0.5em 1em;
-  text-align: left;
-  outline: none;
-  font-family: system-ui;
-  max-height: 8em;
-  overflow-y: auto;
-}
-
-.input-text-message:empty:before {
-  content: attr(placeholder);
-  cursor: text;
-  display: inline-block;
-  width: 85%;
-}
-
-.chat-message-form form button {
-  border: none;
-  background: #fff;
-  color: #0066ff !important;
-  font-family: system-ui;
-  display: block;
-  font-size: 1.2em;
-  padding: 0.5em;
-}
-
-.chat-form-emotion {
-  padding: 0.3em;
-  font-size: 1.5em;
-  cursor: pointer;
-  border-radius: 100px;
-}
-
-.chat-form-emotion:hover {
-  background: #80808026;
-}
+@import "@assets/style/send_chat_message_form.css";
 </style>

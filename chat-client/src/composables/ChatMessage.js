@@ -1,7 +1,7 @@
 import { socket } from '@/plugins/socket';
 import { addDoc, collection, getDocs, limit, onSnapshot, orderBy, query, serverTimestamp, where } from 'firebase/firestore';
 import { ref } from 'vue';
-import { db } from '../config/firebase';
+import { db } from '@config/firebase';
 
 const messages = ref(new Map());
 

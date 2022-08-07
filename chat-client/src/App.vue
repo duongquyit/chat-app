@@ -28,6 +28,7 @@
   overflow: hidden;
   display: flex;
   padding: 0 .5em;
+  transition: background .5s linear;
 }
 
 .darkMode {

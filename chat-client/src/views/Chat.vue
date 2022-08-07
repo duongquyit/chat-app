@@ -26,29 +26,17 @@
         @selectWorldChat="handleSelectPublicChat"
         @selectGroupChat="handleSelectGroupChat"
         @selectEdit="handleGetGroupInformation"
-        @addGroupChatForm="isShowAddGroupForm = true"
+        @selectLeave="handleLeaveGroupChat"
+        @addGroupChatForm="handleShowAddGroupChatForm"
       />
       <!-- Chat -->
       <div class="chat-message" :class="{ borderDarkMode: isDarkMode }">
         <!-- message header -->
         <MessageHeader
-          :chatMessageHeaderAvatar="chatMessageHeaderAvatar"
-          :chatMessageHeaderName="chatMessageHeaderName"
+          :chatMessageHeaderAvatar="roomChatInfor.image"
+          :chatMessageHeaderName="roomChatInfor.name"
         />
-        <!-- show private messages -->
-        <!-- <DisplayMessage
-          v-if="isChatPrivate"
-          :messages="messages.get(`${groupChatId}`)"
-          :currentUser="currentUser"
-        >
-          <template v-slot:chatForm>
-            <SendChatMessageForm
-              @changeTextMessage="handleChatMessage"
-              @submitSendMessage="handleSubmitMessage"
-            />
-          </template>
-        </DisplayMessage> -->
-        <!-- show public messages -->
+        <!-- show messages -->
         <DisplayMessage
           :messages="messages.get(`${chatMessagesKey}`)"
           :currentUser="currentUser"
@@ -92,8 +80,8 @@
 
 <script>
 import { ref } from "@vue/reactivity";
-import { socket } from "../plugins/socket";
 import { onMounted } from "@vue/runtime-core";
+import { socket } from "@plugins/socket";
 
 import {
   messages,
@@ -104,32 +92,32 @@ import {
   createGroupChatMessage,
   getGroupChatMessage,
   getPrivateChatId,
-} from "../composables/ChatMessage";
-import { isDarkMode } from "../composables/GlobalVariables";
-import { updateName, updatePhotoURL } from "../composables/UserProfile";
-import { uploadImageToCloud } from "../composables/UploadImage";
+} from "@composables/ChatMessage";
+import { isDarkMode } from "@composables/GlobalVariables";
+import { updateName, updatePhotoURL } from "@composables/UserProfile";
+import { uploadImageToCloud } from "@composables/UploadImage";
 import {
   addNotification,
   countUnseen,
   getNoficationCurrentUser,
-} from "../composables/Notification";
-import { addUserToRoom, removeUserFromRoom } from "../composables/Room";
+} from "@composables/Notification";
+import { addUserToRoom, removeUserFromRoom } from "@composables/Room";
 import {
   createGroupChat,
   getGroupsChatOfCurrentUser,
   updateGroupChat,
-} from "../composables/GroupChat";
+  leaveGroupChat,
+} from "@composables/GroupChat";
 
-import ListUserOnline from "../components/User/ListUserOnline.vue";
-import DisplayMessage from "../components/Chat/DisplayMessage.vue";
-import MessageHeader from "../components/Chat/MessageHeader.vue";
-import UserProfile from "../components/User/UserProfile.vue";
-import UploadImage from "../components/Template/UploadImage.vue";
-import Navbar from "../components/Template/Navbar.vue";
-import SendChatMessageForm from "../components/Chat/SendChatMessageForm.vue";
-import Emotion from "../components/Template/Emotion.vue";
-import GroupChatForm from "../components/Group/GroupChatFrom.vue";
-import { toast } from "../composables/ToastMessage";
+import ListUserOnline from "@components/User/ListUserOnline.vue";
+import DisplayMessage from "@components/Chat/DisplayMessage.vue";
+import MessageHeader from "@components/Chat/MessageHeader.vue";
+import UserProfile from "@components/User/UserProfile.vue";
+import UploadImage from "@components/Template/UploadImage.vue";
+import Navbar from "@components/Template/Navbar.vue";
+import SendChatMessageForm from "@components/Chat/SendChatMessageForm.vue";
+import Emotion from "@components/Template/Emotion.vue";
+import GroupChatForm from "@components/Group/GroupChatFrom.vue";
 
 export default {
   name: "ChatPage",
@@ -152,21 +140,27 @@ export default {
     const isChatPrivate = ref(false);
     const isChatGroup = ref(false);
 
+    // define key for type chat and room chat
     const chatMessagesKey = ref("public-messages");
 
     // HANDLE SELECT CHAT PRIVATE OR PUBLIC
     // select chat with other user online or chat world
-    const chatMessageHeaderName = ref("World Chat");
-    const chatMessageHeaderAvatar = ref("");
+    const roomChatInfor = ref({
+      name: "Public Chat",
+      image: "",
+    });
 
     const userIsSelected = ref({});
     const handleSelectUser = async (user) => {
-      chatMessageHeaderName.value = user.displayName;
-      chatMessageHeaderAvatar.value = user.photoURL;
+      roomChatInfor.value.name = user.displayName;
+      roomChatInfor.value.image = user.photoURL;
       // get user is select to chat private
       userIsSelected.value = user;
       // get message private between user and other user
-      const chatPrivate = await getPrivateChatId(currentUser.value.uid, user.uid);
+      const chatPrivate = await getPrivateChatId(
+        currentUser.value.uid,
+        user.uid
+      );
       chatMessagesKey.value = chatPrivate;
       getPrivateChatMessage(chatPrivate);
       // set status chat
@@ -178,8 +172,8 @@ export default {
     const handleSelectPublicChat = () => {
       chatMessagesKey.value = "public-messages";
       // change message header
-      chatMessageHeaderName.value = "World Chat";
-      chatMessageHeaderAvatar.value = "";
+      roomChatInfor.value.name = "Public Chat";
+      roomChatInfor.value.image = "";
       // get world message
       getPublicChatMessage();
       // set status chat
@@ -192,6 +186,10 @@ export default {
     // HANDLE GROUP --------------------------------------------------------------------------------
     const isShowAddGroupForm = ref(false);
     const groupChatId = ref("");
+
+    const handleShowAddGroupChatForm = () => {
+      isShowAddGroupForm.value = true;
+    };
 
     getGroupsChatOfCurrentUser(currentUser.value);
 
@@ -213,8 +211,8 @@ export default {
     const handleSelectGroupChat = (group) => {
       chatMessagesKey.value = group.groupChatId;
       //
-      chatMessageHeaderName.value = group.groupChatName;
-      chatMessageHeaderAvatar.value = group.groupChatPhotoURL;
+      roomChatInfor.value.name = group.groupChatName;
+      roomChatInfor.value.image = group.groupChatPhotoURL;
       isChatPrivate.value = true;
       isChatGroup.value = true;
       groupChatId.value = group.groupChatId;
@@ -231,18 +229,18 @@ export default {
     };
 
     const handleUpdateGroupChatName = (newGroupChatName) => {
-      if (!newGroupChatName) {
-        toast.error("Group chat name is not blank");
-      } else if (
-        newGroupChatName.trim() != groupInformation.value.groupChatName.trim()
-      ) {
-        updateGroupChat({
-          groupChatId: groupInformation.value.groupChatId,
-          groupChatName: newGroupChatName,
-          groupChatPhotoURL: groupInformation.value.groupChatPhotoURL,
-          members: groupInformation.value.members,
-        });
-      }
+      updateGroupChat({
+        groupChatId: groupInformation.value.groupChatId,
+        groupChatName: newGroupChatName,
+        groupChatPhotoURL: groupInformation.value.groupChatPhotoURL,
+        members: groupInformation.value.members,
+      });
+    };
+
+    const handleLeaveGroupChat = (groupChatId) => {
+      leaveGroupChat(groupChatId, currentUser.value);
+      roomChatInfor.value.name = "Public Chat";
+      roomChatInfor.value.image = "";
     };
 
     // HANDLE CHAT -------------------------------------------------------------------------------
@@ -395,8 +393,7 @@ export default {
       isChatPrivate,
       currentUser,
       listUsersConnected,
-      chatMessageHeaderName,
-      chatMessageHeaderAvatar,
+      roomChatInfor,
       isShowUploadImage,
       imageURL,
       isDarkMode,
@@ -417,6 +414,8 @@ export default {
       handleSelectGroupChat,
       handleGetGroupInformation,
       handleUpdateGroupChatName,
+      handleLeaveGroupChat,
+      handleShowAddGroupChatForm,
     };
   },
 };

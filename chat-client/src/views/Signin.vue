@@ -15,10 +15,10 @@ import {
   signin,
   isPending,
   errorMessage,
-} from "../composables/Signin";
+} from "@composables/Signin";
 
-import SigninForm from "../components/User/SigninForm.vue";
-import Loading from "../components/Template/Loading.vue";
+import SigninForm from "@components/User/SigninForm.vue";
+import Loading from "@components/Template/Loading.vue";
 
 export default {
   name: "SigninPage",

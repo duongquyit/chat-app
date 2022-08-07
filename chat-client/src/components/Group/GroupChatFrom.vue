@@ -1,19 +1,12 @@
 <template>
   <form
     class="create-new-group-chat-form"
-    @submit.prevent="
-      $emit(
-        'createGroupChat',
-        listUsersDrop,
-        currentUser,
-        groupChatName,
-        groupChatPhotoURL
-      )
-    "
+    :class="{ darkMode: isDarkMode }"
+    @submit.prevent="handleSubmitGroupChatForm"
   >
     <span
       style="text-align: right; color: #ff2f00; font-size: 1.2em"
-      @click="$emit('closeGroupChatForm')"
+      @click="handleCloseGroupChatForm"
     >
       <i class="fa-solid fa-circle-xmark"></i>
     </span>
@@ -21,31 +14,22 @@
       <!-- GROUP CHAT NAME -->
       <p>Group chat name</p>
       <!-- show input group chat name when form is create -->
-      <input v-if="create" type="text" v-model="groupChatName" />
+      <input
+        v-if="create"
+        :class="{ darkMode: isDarkMode }"
+        type="text"
+        v-model="groupChatName"
+      />
       <!-- update template -->
       <span v-if="!create" class="group-chat-name">
         <p v-if="!isEditGroupChatName">{{ groupChatName }}</p>
         <input
           v-else
           type="text"
-          @keydown.enter="
-            $emit('updateGroupChatName', groupChatName),
-              (isEditGroupChatName =
-                groupChatName != group.groupChatName && groupChatName
-                  ? false
-                  : true)
-          "
+          @keydown.enter="handleKeydownInput"
           v-model="groupChatName"
         />
-        <span
-          class="edit-group-chat-name-icon"
-          @click="
-            (isEditGroupChatName = !isEditGroupChatName),
-              (groupChatName = !groupChatName
-                ? group.groupChatName
-                : groupChatName)
-          "
-        >
+        <span class="edit-group-chat-name-icon" @click="handleClickEditIcon">
           <span v-if="!isEditGroupChatName">
             <i class="fa-solid fa-pen"></i>
           </span>
@@ -120,22 +104,62 @@
 import { ref } from "@vue/reactivity";
 import { nextTick, watch } from "@vue/runtime-core";
 
-import { uploadImageToCloud, isPending } from "../../composables/UploadImage";
-import { updateGroupChat } from "../../composables/GroupChat";
+import { uploadImageToCloud, isPending } from "@composables/UploadImage";
+import { updateGroupChat } from "@composables/GroupChat";
 
-import { toast } from "../../composables/ToastMessage";
+import { toast } from "@composables/ToastMessage";
+import { isDarkMode } from "@composables/GlobalVariables";
 
 export default {
   name: "GroupChatForm",
   props: ["create", "group"],
-  setup(props) {
+  setup(props, { emit }) {
     const currentUser = JSON.parse(localStorage.getItem("auth"));
     const listUsersDropScroll = ref(null);
     const groupChatName = ref(props?.group?.groupChatName || "");
     const listUsersDrop = ref(props?.group?.members || []);
     const groupChatPhotoURL = ref(props?.group?.groupChatPhotoURL || "");
-
     const isEditGroupChatName = ref(false);
+
+    const handleSubmitGroupChatForm = () => {
+      if (listUsersDrop.value.length > 1) {
+        emit(
+          "createGroupChat",
+          listUsersDrop.value,
+          currentUser,
+          groupChatName.value,
+          groupChatPhotoURL.value
+        );
+      } else {
+        toast.error("There must be least three user in group");
+      }
+    };
+
+    const handleKeydownInput = () => {
+      if (!groupChatName.value.trim()) {
+        toast.error("Group chat name is not blank");
+      } else {
+        if (groupChatName.value != props.group.groupChatName) {
+          emit("updateGroupChatName", groupChatName.value);
+          isEditGroupChatName.value = false;
+          return;
+        }
+        isEditGroupChatName.value = true;
+      }
+    };
+
+    const handleCloseGroupChatForm = () => {
+      emit("closeGroupChatForm");
+    };
+
+    const handleClickEditIcon = () => {
+      if (isEditGroupChatName.value) {
+        if (groupChatName.value != props.group.groupChatName) {
+          groupChatName.value = props.group.groupChatName;
+        }
+      }
+      isEditGroupChatName.value = !isEditGroupChatName.value;
+    };
 
     // handle upload group chat photo
     const handleUploadImageGroup = async (evt) => {
@@ -202,7 +226,7 @@ export default {
           });
         }
       } else {
-        toast.error("At least two users in the group");
+        toast.error("At least three users in the group");
       }
     };
 
@@ -224,6 +248,11 @@ export default {
       groupChatPhotoURL,
       isPending,
       isEditGroupChatName,
+      isDarkMode,
+      handleSubmitGroupChatForm,
+      handleKeydownInput,
+      handleCloseGroupChatForm,
+      handleClickEditIcon,
       handleUploadImageGroup,
       handleDropUser,
       handleRemoveUserOutListUserDrop,
@@ -233,132 +262,5 @@ export default {
 </script>
 
 <style>
-.create-new-group-chat-form {
-  position: absolute;
-  width: 35%;
-  min-width: 400px;
-  background: white;
-  box-shadow: rgb(0 0 0 / 16%) 0px 1px 4px;
-  border-radius: 5px;
-  top: 3em;
-  left: 0;
-  right: 0;
-  padding: 1em;
-  margin: 0 auto;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.create-new-group-chat-form-infor {
-  text-align: left;
-  margin-bottom: 1em;
-}
-
-.create-new-group-chat-form-infor input[type="text"] {
-  width: 100%;
-  padding: 0.3em 0.5em;
-  font-size: 1.1em;
-  font-family: system-ui;
-  border-radius: 5px;
-  border: 1px solid #8080805c;
-  color: #5c5c5c;
-  outline: none;
-}
-
-.create-new-group-chat-form-infor p {
-  font-size: 1.1em;
-  padding: 0.5em 0em;
-}
-
-.create-new-group-chat-form-member {
-  width: 100%;
-  max-height: 170px;
-  margin: 0.5em 0em;
-  overflow: auto;
-}
-
-.create-new-group-chat-form-member-item {
-  display: flex;
-  padding: 0.5em;
-  box-shadow: rgb(0 0 0 / 16%) 0px 1px 4px;
-  border-radius: 5px;
-  margin: 0.5em 0em;
-  align-items: center;
-  position: relative;
-}
-
-.create-new-group-chat-form-member-item img {
-  width: 2em;
-  height: 2em;
-  border-radius: 100px;
-  margin: 0 0.5em;
-}
-
-.new-group-chat-submit-btn {
-  width: 10em;
-  background: #0066ff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 0.5em 0em;
-  font-size: 1em;
-  margin: 1em auto 0em auto;
-}
-
-.notAllowSubmitButton {
-  background: #0066ff9e;
-}
-
-.remove-user-out-list-member-icon {
-  position: absolute;
-  right: 0;
-  font-size: 1.5em;
-  padding: 0.3em 0.5em;
-  cursor: pointer;
-}
-
-.message-list-drop-user-empty {
-  padding: 1em;
-  margin: 0.5em 0em;
-  border: 1px solid gray;
-  border-style: dashed;
-  border-radius: 5px;
-}
-
-.new-group-chat-form-upload-image {
-  width: 7em;
-  height: 7em;
-  margin: auto;
-  border: 1px solid grey;
-  border-style: dashed;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  padding: 0.2em;
-}
-
-.new-group-chat-form-upload-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.group-chat-name {
-  font-size: 1.1em;
-  padding: 0.5em 0em;
-  display: block;
-  display: flex;
-  align-items: center;
-}
-
-.edit-group-chat-name-icon {
-  font-size: 0.8em;
-  padding: 0.5em;
-  border-radius: 100px;
-  box-shadow: rgb(0 0 0 / 16%) 0px 1px 4px;
-  margin: 0 0.5em;
-}
+@import "@assets/style/group_chat_form.css";
 </style>

@@ -1,9 +1,9 @@
 import { socket } from '@/plugins/socket';
 import { signOut } from 'firebase/auth';
 import { ref } from 'vue';
-import { auth } from '../config/firebase';
+import { auth } from '@config/firebase';
 
-import router from '../router';
+import router from '@router';
 
 const isPending = ref(false);
 

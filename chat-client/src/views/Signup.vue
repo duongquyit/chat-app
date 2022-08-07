@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import SignupForm from "../components/User/SignupForm.vue";
-import { signup, isPending, errorMessage } from "../composables/Signup";
+import SignupForm from "@components/User/SignupForm.vue";
+import { signup, isPending, errorMessage } from "@composables/Signup";
 export default {
   name: "SignupPage",
   components: {
