@@ -1,8 +1,8 @@
 <template>
   <div class="list-notification" :class="{ darkMode: isDarkMode }">
-    <h3 class="notification-title">Notification</h3>
+    <h3 class="notification-title">{{ $t("nav.notification.title") }}</h3>
     <div class="notification-message-no-item" v-if="!notification.length">
-      <p>You don't have any notification!</p>
+      <p>{{ $t("nav.notification.messageEmpty") }}</p>
     </div>
     <div
       v-else
@@ -15,7 +15,8 @@
       <img :src="notificationItem.sender.photoURL" alt="" />
       <div class="notification-message-container">
         <span>
-          You have new message from {{ notificationItem.sender.displayName }}
+          {{ $t("nav.notification.message") }}
+          {{ notificationItem.sender.displayName }}
         </span>
         <span class="notification-time-momment">
           {{ timeSince(notificationItem.createdAt) }}

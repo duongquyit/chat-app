@@ -3,7 +3,7 @@
     <Loading v-if="isPending" />
     <div class="signup-form-container">
       <div class="siggup-form">
-        <h3>Signup</h3>
+        <h3>{{ $t("signup.title") }}</h3>
         <form
           @submit.prevent="
             $emit('signup', email, password, name),
@@ -12,17 +12,23 @@
               (name = '')
           "
         >
-          <input type="text" placeholder="Your full name" v-model="name" />
+          <input type="text" :placeholder="$t('signup.name')" v-model="name" />
           <input type="email" placeholder="Email" v-model="email" />
-          <input type="password" placeholder="Password" v-model="password" />
+          <input
+            type="password"
+            :placeholder="$t('signup.password')"
+            v-model="password"
+          />
           <span class="signup-form-error-message" v-show="errorMessage">
             {{ errorMessage }}
           </span>
-          <button type="submit">Signup</button>
+          <button type="submit">{{ $t("signup.title") }}</button>
         </form>
         <p class="redirect-page">
-          You has account?
-          <router-link :to="{ name: 'signin' }">Sign in</router-link>
+          {{ $t("signup.changeForm") }}
+          <router-link :to="{ name: 'signin' }">
+            {{ $t("signup.signin") }}
+          </router-link>
         </p>
       </div>
     </div>
@@ -49,5 +55,5 @@ export default {
 </script>
 
 <style>
-@import '@assets/style/signup.css';
+@import "@assets/style/signup.css";
 </style>

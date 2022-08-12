@@ -8,7 +8,7 @@
       :class="{ isSelected: !userIdSelected && !groupIdSelected }"
       @click="handleClickPublicChat"
     >
-      <span>World Chat</span>
+      <span>{{ $t("message.chatType.public") }}</span>
     </div>
     <!-- GROUP CHAT -->
     <div class="group-chat-message">
@@ -17,7 +17,7 @@
           class="group-chat-message-header-title"
           @click="handleClickGroupChat"
         >
-          <p>Group chat</p>
+          <p>{{ $t("message.chatType.group") }}</p>
           <span
             style="transition: transform 0.5s"
             :class="{ rotateArrow: isShowGroupsChat }"
@@ -36,7 +36,7 @@
           class="message-group-chat-empty"
           v-if="!listGroupsChatOfCurrentUser.length"
         >
-          <p>You don't have any group chat!</p>
+          <p>{{ $t("message.group.groupMessageEmpty") }}</p>
         </div>
         <div
           class="group-chat-message-body-item"
@@ -60,8 +60,12 @@
                 isShowGroupChatSelection && group.groupChatId == groupIdSelected
               "
             >
-              <span @click="handleClickSelectEditGroup(group)">Edit</span>
-              <span @click="handleClickSelectLeaveGroup(group.groupChatId)">Leave</span>
+              <span @click="handleClickSelectEditGroup(group)">
+                {{ $t("message.group.edit") }}
+              </span>
+              <span @click="handleClickSelectLeaveGroup(group.groupChatId)">
+                {{ $t("message.group.leave") }}
+              </span>
             </div>
           </div>
         </div>
@@ -72,7 +76,7 @@
       class="list-user-connected-title"
       :class="{ borderDarkModeBottom: isDarkMode }"
     >
-      User Online
+      {{ $t("user.listUsersOnline") }}
     </span>
     <div class="list-user">
       <div
@@ -88,7 +92,7 @@
         <span>
           {{
             currentUser.uid == user.uid
-              ? `${user.displayName} (You)`
+              ? `${user.displayName} (${$t("user.currentUser")})`
               : `${user.displayName}`
           }}
         </span>

@@ -11,6 +11,17 @@
         <ul :class="{ darkMode: isDarkMode }">
           <li><img :src="currentUser?.photoURL" alt="" /></li>
           <li>
+            <div class="locale-value" @click="handleShowLocaleChange">
+              <span>{{ language.get(locale)[0] }}</span>
+              <img :src="language.get(locale)[1]" alt="" />
+            </div>
+            <LocaleChange
+              v-if="isShowLocaleChange"
+              :language="language"
+              @changeLanguage="handleChangeLanguage"
+            />
+          </li>
+          <li>
             <div
               class="background-mode"
               :class="{ darkModeToggle: isDarkMode }"
@@ -35,7 +46,9 @@
               @click="handleClickNotificationItem"
             >
               <i class="fa-solid fa-bell"></i>
-              <p class="nav-bar-icon-description">Notification</p>
+              <p class="nav-bar-icon-description">
+                {{ $t("nav.notification.title") }}
+              </p>
               <div v-if="countNotification" class="amount-notification">
                 {{ countNotification }}
               </div>
@@ -50,19 +63,19 @@
           <li>
             <span class="nav-bar-item">
               <i class="fa-solid fa-message"></i>
-              <p class="nav-bar-icon-description">Message</p>
+              <p class="nav-bar-icon-description">{{ $t("nav.message") }}</p>
             </span>
           </li>
           <li>
             <span class="nav-bar-item">
               <i class="fa-solid fa-user"></i>
-              <p class="nav-bar-icon-description">User</p>
+              <p class="nav-bar-icon-description">{{ $t("nav.user") }}</p>
             </span>
           </li>
           <li>
             <span class="nav-bar-item" @click="handleLogout">
               <i class="fa-solid fa-right-from-bracket"></i>
-              <p class="nav-bar-icon-description">Logout</p>
+              <p class="nav-bar-icon-description">{{ $t("nav.logout") }}</p>
             </span>
           </li>
         </ul>
@@ -73,33 +86,47 @@
 
 <script>
 import { ref } from "@vue/reactivity";
-  import { watch } from "@vue/runtime-core";
+import { watch } from "@vue/runtime-core";
+import { useI18n } from "vue-i18n";
 
 import { isDarkMode } from "@composables/GlobalVariables";
-import {
-  listNotifications,
-  updateSeenStatus,
-} from "@composables/Notification";
+import { listNotifications, updateSeenStatus } from "@composables/Notification";
 import { logout } from "@composables/Logout";
+import { language } from "@composables/Language";
 
 import ListNotification from "@components/Template/ListNotification.vue";
+import LocaleChange from "@components/Template/LocaleChange.vue";
+
 
 export default {
   name: "TheNavbar",
   props: ["currentUser", "countNotification"],
   components: {
     ListNotification,
+    LocaleChange,
   },
   setup() {
     const isShowNotification = ref(false);
 
+    const { locale } = useI18n({});
+    const isShowLocaleChange = ref(false);
+
+    const handleShowLocaleChange = () => {
+      isShowLocaleChange.value = !isShowLocaleChange.value;
+    };
+
+    const handleChangeLanguage = (lang) => {
+      locale.value = lang[0];
+      isShowLocaleChange.value = false;
+    };
+
     const handleClickThemeMode = () => {
       isDarkMode.value = !isDarkMode.value;
-    }
+    };
 
     const handleClickNotificationItem = () => {
       isShowNotification.value = !isShowNotification.value;
-    }
+    };
 
     const handleUpdateSeenStatus = (docId) => {
       updateSeenStatus(docId);
@@ -130,6 +157,11 @@ export default {
       isDarkMode,
       listNotifications,
       isShowNotification,
+      language,
+      locale,
+      isShowLocaleChange,
+      handleChangeLanguage,
+      handleShowLocaleChange,
       handleClickThemeMode,
       handleClickNotificationItem,
       handleUpdateSeenStatus,
@@ -140,5 +172,5 @@ export default {
 </script>
 
 <style>
-@import '@assets/style/navbar.css'; 
+@import "@assets/style/navbar.css";
 </style>

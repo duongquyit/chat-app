@@ -4,7 +4,7 @@
       class="upload-image"
       :class="{ darkMode: isDarkMode, borderDarkMode: isDarkMode }"
     >
-      <h3 class="upload-image-title">Upload your image</h3>
+      <h3 class="upload-image-title">{{ $t("user.edit.uploadImageTitle") }}</h3>
       <div class="upload-image-form" :class="{ borderDarkMode: isDarkMode }">
         <input
           type="file"
@@ -20,13 +20,19 @@
           <LoadingImage v-if="isPending" />
           <div class="upload-text" v-if="!imageURL">
             <span class="upload-icon"><i class="fa-solid fa-upload"></i></span>
-            <span class="upload-text">Upload image from your device</span>
+            <span class="upload-text">{{
+              $t("user.edit.uploadImageMessage")
+            }}</span>
           </div>
           <img class="upload-image-before-save" v-else :src="imageURL" alt="" />
         </label>
       </div>
-      <button @click="handleClickSaveBtn" class="save-btn">Save</button>
-      <button @click="handleClickCancelBtn" class="cancel-btn">Cancel</button>
+      <button @click="handleClickSaveBtn" class="save-btn">
+        {{ $t("user.edit.save") }}
+      </button>
+      <button @click="handleClickCancelBtn" class="cancel-btn">
+        {{ $t("user.edit.cancel") }}
+      </button>
     </div>
   </div>
 </template>

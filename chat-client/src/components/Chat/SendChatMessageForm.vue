@@ -18,7 +18,7 @@
         :class="{ borderDarkMode: isDarkMode, darkMode: isDarkMode }"
         ref="textInput"
         contenteditable="true"
-        placeholder="Text message"
+        placeholder="Aa"
         aria-multiline="true"
         spellcheck="false"
         @keydown="handleKeyDownTextInput"

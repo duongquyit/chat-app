@@ -90,9 +90,12 @@
 
 .group-chat-message-header-title {
   display: inline-flex;
-  width: 45%;
   justify-content: space-around;
   cursor: pointer;
+}
+
+.group-chat-message-header-title p {
+  padding: 0em 0.5em 0em 0em;
 }
 
 .group-chat-message-body {

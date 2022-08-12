@@ -12,7 +12,7 @@
     </span>
     <div class="create-new-group-chat-form-infor">
       <!-- GROUP CHAT NAME -->
-      <p>Group chat name</p>
+      <p>{{ $t("message.group.groupName") }}</p>
       <!-- show input group chat name when form is create -->
       <input
         v-if="create"
@@ -39,7 +39,7 @@
         </span>
       </span>
       <!-- IMAGE GROUP CHAT -->
-      <p>Group chat image</p>
+      <p>{{ $t("message.group.groupImage") }}</p>
       <input
         style="display: none"
         type="file"
@@ -63,7 +63,7 @@
       </label>
     </div>
     <!-- GROUP CHAT LIST USER -->
-    <p style="text-align: left; font-size: 1.1em">List user invite group</p>
+    <p style="text-align: left; font-size: 1.1em">{{ $t("message.group.groupMembers") }}</p>
     <div
       class="create-new-group-chat-form-member"
       @dragover.prevent=""
@@ -71,7 +71,7 @@
       ref="listUsersDropScroll"
     >
       <p v-if="!listUsersDrop.length" class="message-list-drop-user-empty">
-        Drag user from list user online and drop here
+        {{ $t("message.group.groupMembersDropMessage") }}
       </p>
       <div
         class="create-new-group-chat-form-member-item"
@@ -95,7 +95,7 @@
       type="submit"
       :disabled="!groupChatName || !listUsersDrop.length"
     >
-      Create
+      {{ $t("message.group.groupCreateBtn") }}
     </button>
   </form>
 </template>

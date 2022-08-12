@@ -2,14 +2,18 @@
   <div class="app">
     <div class="signin-form-container">
       <div class="signin-form">
-        <h3>Signin</h3>
+        <h3>{{ $t("signin.title") }}</h3>
         <form @submit.prevent="$emit('signin', email, password)">
           <input type="email" v-model="email" placeholder="Email" />
-          <input type="password" v-model="password" placeholder="Password" />
+          <input
+            type="password"
+            v-model="password"
+            :placeholder="$t('signin.title')"
+          />
           <span class="signin-error-message" v-show="errorMessage">
             {{ errorMessage }}
           </span>
-          <button type="submit">Signin</button>
+          <button type="submit">{{ $t("signin.title") }}</button>
         </form>
       </div>
       <div class="or-change-method-signin">
@@ -18,21 +22,25 @@
       <span
         @click="$emit('signinWithGoogle')"
         class="signin-with-society-network gg-login"
-        ><span class="icon-custom"
-          ><i class="fa-brands fa-google"></i></span
-        >&ensp;Login with Google</span
+        ><span class="icon-custom"><i class="fa-brands fa-google"></i></span
+        >&ensp;{{
+          $t("signin.societyNetWork", { name: "Google" })
+        }}</span
       >
       <span
         @click="$emit('signinWithFacebook')"
         class="signin-with-society-network fb-login"
       >
-        <span class="icon-custom"
-          ><i class="fa-brands fa-facebook"></i></span
-        >&ensp;Login with Facebook</span
+        <span class="icon-custom"><i class="fa-brands fa-facebook"></i></span
+        >&ensp;{{
+          $t("signin.societyNetWork", { name: "Facebook" })
+        }}</span
       >
       <p class="redirect-page">
-        You don't has account?
-        <router-link :to="{ name: 'signup' }">Sign up</router-link>
+        {{ $t("signin.changeForm") }}
+        <router-link :to="{ name: 'signup' }">
+          {{ $t("signin.signup") }}
+        </router-link>
       </p>
     </div>
   </div>
@@ -53,5 +61,5 @@ export default {
 </script>
 
 <style>
-@import '@assets/style/signin.css';
+@import "@assets/style/signin.css";
 </style>
