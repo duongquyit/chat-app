@@ -8,9 +8,8 @@
 }
 
 .public-chat {
-  height: 10%;
   text-align: left;
-  padding: 1em 0.5em;
+  padding: 5% 0.5em;
   font-family: system-ui;
   font-size: 1.2em;
   cursor: pointer;
@@ -18,10 +17,9 @@
 }
 
 .list-user-connected-title {
-  height: 7%;
   font-size: 1.1em;
   font-family: system-ui;
-  padding: 0.5em;
+  padding: 3% 0.5em;
   display: block;
   border-bottom: 1px solid var(--border-color);
 }
@@ -84,7 +82,7 @@
 .group-chat-message-header {
   display: flex;
   justify-content: space-between;
-  padding: 0.5em 0em;
+  padding: 3% 0em;
   font-size: 1.1em;
 }
 

@@ -8,6 +8,7 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -19,7 +20,7 @@
 
 :root {
   --border-color: #0000003d;
-  --border-color-darkmode: #919191;
+  --border-color-darkmode: #9191913d;
 }
 
 .app {
@@ -28,12 +29,13 @@
   overflow: hidden;
   display: flex;
   padding: 0 .5em;
+  justify-content: center;
   transition: background .5s linear;
 }
 
 .darkMode {
   background: #303030 !important;
-  color: #d7d7d7 !important;
+  color: #a0a0a0 !important;
 }
 
 .borderDarkModeLeft {
@@ -66,13 +68,16 @@
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.055);
 }
+
 ::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.123);
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.322);
 }
+
 ::-webkit-scrollbar-thumb:active {
   background: rgba(0, 0, 0, 0.548);
 }

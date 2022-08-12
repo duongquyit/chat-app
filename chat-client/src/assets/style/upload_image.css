@@ -13,10 +13,11 @@
   background: white;
   margin: 4em auto;
   border-radius: 10px;
+  padding-top: 2.5em;
 }
 
 .upload-image-title {
-  padding: 0.5em;
+  padding-bottom: 0.5em;
   font-family: system-ui;
   font-weight: 400;
 }
@@ -52,6 +53,7 @@
   font-family: system-ui;
   color: #fff;
   font-size: 1em;
+  margin-bottom: 0;
 }
 
 .save-btn {

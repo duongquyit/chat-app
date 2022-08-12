@@ -36,7 +36,6 @@
 .tooltip-send,
 .tooltip-receive {
   position: absolute;
-  top: 5px;
   background: #201f1fd1;
   color: white;
   padding: 0.5em;
@@ -68,7 +67,7 @@
   content: " ";
   position: absolute;
   top: 50%;
-  left: -7%;
+  left: -8%;
   margin-top: -5px;
   border-width: 5px;
   border-style: solid;
