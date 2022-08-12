@@ -1,79 +1,41 @@
 <template>
   <div class="app" :class="{ darkMode: isDarkMode }">
     <!-- create new group chat form -->
-    <GroupChatForm
-      v-if="isShowAddGroupForm"
-      :group="null"
-      :create="true"
-      @closeGroupChatForm="isShowAddGroupForm = false"
-      @createGroupChat="handleCreateGroupChat"
-    />
+    <GroupChatForm v-if="isShowAddGroupForm" :group="null" :create="true"
+      @closeGroupChatForm="isShowAddGroupForm = false" @createGroupChat="handleCreateGroupChat" />
     <!-- update group chat form -->
-    <GroupChatForm
-      v-if="isShowEditGroupChatForm"
-      :create="false"
-      :group="groupInformation"
-      @closeGroupChatForm="isShowEditGroupChatForm = false"
-      @updateGroupChatName="handleUpdateGroupChatName"
-    />
+    <GroupChatForm v-if="isShowEditGroupChatForm" :create="false" :group="groupInformation"
+      @closeGroupChatForm="isShowEditGroupChatForm = false" @updateGroupChatName="handleUpdateGroupChatName" />
     <Navbar :currentUser="currentUser" :countNotification="countUnseen" />
     <div class="chat-message-container">
       <!-- List user online -->
-      <ListUserOnline
-        :listUsersConnected="listUsersConnected"
-        :currentUser="currentUser"
-        @selectUser="handleSelectUser"
-        @selectWorldChat="handleSelectPublicChat"
-        @selectGroupChat="handleSelectGroupChat"
-        @selectEdit="handleGetGroupInformation"
-        @selectLeave="handleLeaveGroupChat"
-        @addGroupChatForm="handleShowAddGroupChatForm"
-      />
+      <ListUserOnline :listUsersConnected="listUsersConnected" :currentUser="currentUser" @selectUser="handleSelectUser"
+        @selectWorldChat="handleSelectPublicChat" @selectGroupChat="handleSelectGroupChat"
+        @selectEdit="handleGetGroupInformation" @selectLeave="handleLeaveGroupChat"
+        @addGroupChatForm="handleShowAddGroupChatForm" />
       <!-- Chat -->
       <div class="chat-message" :class="{ borderDarkMode: isDarkMode }">
         <!-- message header -->
-        <MessageHeader
-          :chatMessageHeaderAvatar="roomChatInfor.image"
-          :chatMessageHeaderName="roomChatInfor.name"
-        />
+        <MessageHeader :chatMessageHeaderAvatar="roomChatInfor.image" :chatMessageHeaderName="roomChatInfor.name" />
         <!-- show messages -->
-        <DisplayMessage
-          :messages="messages.get(`${chatMessagesKey}`)"
-          :currentUser="currentUser"
-        >
+        <DisplayMessage :messages="messages.get(`${chatMessagesKey}`)" :currentUser="currentUser">
           <!-- chat form -->
           <template v-slot:chatForm="{ chatScrollBar }">
-            <SendChatMessageForm
-              :chatScrollBar="chatScrollBar"
-              @changeTextMessage="handleChatMessage"
-              @submitSendMessage="handleSubmitMessage"
-            >
+            <SendChatMessageForm :chatScrollBar="chatScrollBar" @changeTextMessage="handleChatMessage"
+              @submitSendMessage="handleSubmitMessage">
               <!-- show emotion table -->
               <template v-slot:listEmotion="{ isShowEmotions, textInput }">
-                <Emotion
-                  :isShowEmotions="isShowEmotions"
-                  :textInput="textInput"
-                  @addEmotion="handleAddEmotion"
-                />
+                <Emotion :isShowEmotions="isShowEmotions" :textInput="textInput" @addEmotion="handleAddEmotion" />
               </template>
             </SendChatMessageForm>
           </template>
         </DisplayMessage>
       </div>
       <!-- profile -->
-      <UserProfile
-        :currentUser="currentUser"
-        @editName="handleUpdateProfile"
-        @showUploadImgae="(isShowUploadImage = true), (imageURL = '')"
-      />
-      <UploadImage
-        v-if="isShowUploadImage"
-        :imageURL="imageURL"
-        @uploadImage="handleUploadImage"
-        @dropImage="handleUploadImage"
-        @save="handleSaveChange"
-        @cancel="isShowUploadImage = false"
-      />
+      <UserProfile :currentUser="currentUser" @editName="handleUpdateProfile"
+        @showUploadImgae="(isShowUploadImage = true), (imageURL = '')" />
+      <UploadImage v-if="isShowUploadImage" :imageURL="imageURL" @uploadImage="handleUploadImage"
+        @dropImage="handleUploadImage" @save="handleSaveChange" @cancel="isShowUploadImage = false" />
     </div>
   </div>
 </template>
@@ -82,6 +44,8 @@
 import { ref } from "@vue/reactivity";
 import { onMounted } from "@vue/runtime-core";
 import { socket } from "@plugins/socket";
+import { useI18n } from "vue-i18n";
+
 
 import {
   messages,
@@ -133,6 +97,8 @@ export default {
     GroupChatForm,
   },
   setup() {
+    const { t } = useI18n();
+
     // get user on localstorage
     const currentUser = ref(JSON.parse(localStorage.getItem("auth")));
 
@@ -146,7 +112,7 @@ export default {
     // HANDLE SELECT CHAT PRIVATE OR PUBLIC
     // select chat with other user online or chat world
     const roomChatInfor = ref({
-      name: "Public Chat",
+      name: `${t('message.chatType.public')}`,
       image: "",
     });
 
@@ -172,7 +138,7 @@ export default {
     const handleSelectPublicChat = () => {
       chatMessagesKey.value = "public-messages";
       // change message header
-      roomChatInfor.value.name = "Public Chat";
+      roomChatInfor.value.name = `${t('message.chatType.public')}`;
       roomChatInfor.value.image = "";
       // get world message
       getPublicChatMessage();
@@ -239,7 +205,7 @@ export default {
 
     const handleLeaveGroupChat = (groupChatId) => {
       leaveGroupChat(groupChatId, currentUser.value);
-      roomChatInfor.value.name = "Public Chat";
+      roomChatInfor.value.name = `${t('message.chatType.public')}`;
       roomChatInfor.value.image = "";
     };
 

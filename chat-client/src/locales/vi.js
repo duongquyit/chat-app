@@ -30,6 +30,14 @@ const vi = {
       title: 'Thông báo',
       message: 'Bạn có tin nhắn mới từ',
       messageEmpty: 'Bạn không có bất kỳ thông báo nào',
+      time: {
+        minutes: 'phút trước',
+        hours: 'giờ trước',
+        day: 'ngày trước',
+        month: 'tháng trước',
+        year: 'năm trước',
+        now: 'Bây giờ'
+      }
     },
     message: 'Tin nhắn',
     user: 'Người dùng',
@@ -48,6 +56,12 @@ const vi = {
     password: 'Mật khẩu',
     changeForm: 'Bạn đã có tài khoản',
     signin: 'Đăng nhập',
+  },
+  toast: {
+    notEnoughMembers: 'Phải có ít nhất ba thành viên trong nhóm',
+    nameBlank: 'Tên nhóm không được để trống',
+    existsUser: 'Người dùng đã tồn tại trong nhóm',
+    bossConfirm: 'Bạn không phải người tạo nhóm',
   }
 }
 

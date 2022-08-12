@@ -1,12 +1,9 @@
 <template>
   <nav>
-    <div
-      class="navbar-container"
-      :class="{
-        borderDarkModeLeft: isDarkMode,
-        borderDarkModeRight: isDarkMode,
-      }"
-    >
+    <div class="navbar-container" :class="{
+      borderDarkModeLeft: isDarkMode,
+      borderDarkModeRight: isDarkMode,
+    }">
       <div class="navbar">
         <ul :class="{ darkMode: isDarkMode }">
           <li><img :src="currentUser?.photoURL" alt="" /></li>
@@ -15,22 +12,11 @@
               <span>{{ language.get(locale)[0] }}</span>
               <img :src="language.get(locale)[1]" alt="" />
             </div>
-            <LocaleChange
-              v-if="isShowLocaleChange"
-              :language="language"
-              @changeLanguage="handleChangeLanguage"
-            />
+            <LocaleChange v-if="isShowLocaleChange" :language="language" @changeLanguage="handleChangeLanguage" />
           </li>
           <li>
-            <div
-              class="background-mode"
-              :class="{ darkModeToggle: isDarkMode }"
-              @click="handleClickThemeMode"
-            >
-              <div
-                class="background-mode-option"
-                :class="{ darkModeToggleOption: isDarkMode }"
-              >
+            <div class="background-mode" :class="{ darkModeToggle: isDarkMode }" @click="handleClickThemeMode">
+              <div class="background-mode-option" :class="{ darkModeToggleOption: isDarkMode }">
                 <span v-if="isDarkMode" class="dark-mode-icon">
                   <i class="fa-solid fa-moon"></i>
                 </span>
@@ -41,10 +27,7 @@
             </div>
           </li>
           <li>
-            <span
-              class="nav-bar-item notification-icon"
-              @click="handleClickNotificationItem"
-            >
+            <span class="nav-bar-item notification-icon" @click="handleClickNotificationItem">
               <i class="fa-solid fa-bell"></i>
               <p class="nav-bar-icon-description">
                 {{ $t("nav.notification.title") }}
@@ -53,12 +36,8 @@
                 {{ countNotification }}
               </div>
             </span>
-            <ListNotification
-              v-if="isShowNotification"
-              :isDarkMode="isDarkMode"
-              :notification="listNotifications"
-              @updateSeenStatus="handleUpdateSeenStatus"
-            />
+            <ListNotification v-if="isShowNotification" :isDarkMode="isDarkMode" :notification="listNotifications"
+              @updateSeenStatus="handleUpdateSeenStatus" />
           </li>
           <li>
             <span class="nav-bar-item">
@@ -136,7 +115,8 @@ export default {
       logout();
     };
 
-    watch(isShowNotification, () => {
+    watch([isShowNotification, isShowLocaleChange], () => {
+      // click outsie notification
       const clickOutsideNotification = (event) => {
         const listNotifications = document.querySelector(".list-notification");
         const notifiIcon = document.querySelector(".notification-icon");
@@ -150,6 +130,19 @@ export default {
       };
       if (isShowNotification.value) {
         document.addEventListener("click", clickOutsideNotification);
+      }
+
+      // click outside change locale
+      const clickOutsideLocaleChange = (event) => {
+        const localeValue = document.querySelector('.locale-value');
+        const localeChange = document.querySelector('.locale-change');
+        if (!localeValue?.contains(event.target) && !localeChange?.contains(event.target)) {
+          isShowLocaleChange.value = false;
+          document.removeEventListener("click", clickOutsideLocaleChange);
+        }
+      };
+      if (isShowLocaleChange.value) {
+        document.addEventListener("click", clickOutsideLocaleChange);
       }
     });
 

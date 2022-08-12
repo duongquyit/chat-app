@@ -1,34 +1,18 @@
 <template>
-  <form
-    class="create-new-group-chat-form"
-    :class="{ darkMode: isDarkMode }"
-    @submit.prevent="handleSubmitGroupChatForm"
-  >
-    <span
-      style="text-align: right; color: #ff2f00; font-size: 1.2em"
-      @click="handleCloseGroupChatForm"
-    >
+  <form class="create-new-group-chat-form" :class="{ darkMode: isDarkMode }"
+    @submit.prevent="handleSubmitGroupChatForm">
+    <span style="text-align: right; color: #ff2f00; font-size: 1.2em" @click="handleCloseGroupChatForm">
       <i class="fa-solid fa-circle-xmark"></i>
     </span>
     <div class="create-new-group-chat-form-infor">
       <!-- GROUP CHAT NAME -->
       <p>{{ $t("message.group.groupName") }}</p>
       <!-- show input group chat name when form is create -->
-      <input
-        v-if="create"
-        :class="{ darkMode: isDarkMode }"
-        type="text"
-        v-model="groupChatName"
-      />
+      <input v-if="create" :class="{ darkMode: isDarkMode }" type="text" v-model="groupChatName" />
       <!-- update template -->
       <span v-if="!create" class="group-chat-name">
         <p v-if="!isEditGroupChatName">{{ groupChatName }}</p>
-        <input
-          v-else
-          type="text"
-          @keydown.enter="handleKeydownInput"
-          v-model="groupChatName"
-        />
+        <input v-else type="text" @keydown.enter="handleKeydownInput" v-model="groupChatName" />
         <span class="edit-group-chat-name-icon" @click="handleClickEditIcon">
           <span v-if="!isEditGroupChatName">
             <i class="fa-solid fa-pen"></i>
@@ -40,23 +24,10 @@
       </span>
       <!-- IMAGE GROUP CHAT -->
       <p>{{ $t("message.group.groupImage") }}</p>
-      <input
-        style="display: none"
-        type="file"
-        id="groupChatImageFile"
-        @change="handleUploadImageGroup"
-      />
-      <label
-        class="new-group-chat-form-upload-image"
-        for="groupChatImageFile"
-        @dragstart.prevent=""
-        @dragover.prevent=""
-        @drop.prevent="handleUploadImageGroup"
-      >
-        <span
-          v-if="!groupChatPhotoURL"
-          style="font-size: 2em; color: #80808082"
-        >
+      <input style="display: none" type="file" id="groupChatImageFile" @change="handleUploadImageGroup" />
+      <label class="new-group-chat-form-upload-image" for="groupChatImageFile" @dragstart.prevent=""
+        @dragover.prevent="" @drop.prevent="handleUploadImageGroup">
+        <span v-if="!groupChatPhotoURL" style="font-size: 2em; color: #80808082">
           <i class="fa-solid fa-plus"></i>
         </span>
         <img v-else :src="groupChatPhotoURL" alt="" />
@@ -64,37 +35,19 @@
     </div>
     <!-- GROUP CHAT LIST USER -->
     <p style="text-align: left; font-size: 1.1em">{{ $t("message.group.groupMembers") }}</p>
-    <div
-      class="create-new-group-chat-form-member"
-      @dragover.prevent=""
-      @drop="handleDropUser"
-      ref="listUsersDropScroll"
-    >
+    <div class="create-new-group-chat-form-member" @dragover.prevent="" @drop="handleDropUser"
+      ref="listUsersDropScroll">
       <p v-if="!listUsersDrop.length" class="message-list-drop-user-empty">
         {{ $t("message.group.groupMembersDropMessage") }}
       </p>
-      <div
-        class="create-new-group-chat-form-member-item"
-        v-else
-        v-for="user in listUsersDrop"
-        :key="user.uid"
-      >
+      <div class="create-new-group-chat-form-member-item" v-else v-for="user in listUsersDrop" :key="user.uid">
         <img :src="user.photoURL" alt="" />
         <p>{{ user.displayName }}</p>
-        <span
-          class="remove-user-out-list-member-icon"
-          @click="handleRemoveUserOutListUserDrop(user)"
-          >&times;</span
-        >
+        <span class="remove-user-out-list-member-icon" @click="handleRemoveUserOutListUserDrop(user)">&times;</span>
       </div>
     </div>
-    <button
-      class="new-group-chat-submit-btn"
-      :class="{ notAllowSubmitButton: !groupChatName || !listUsersDrop.length }"
-      v-show="create"
-      type="submit"
-      :disabled="!groupChatName || !listUsersDrop.length"
-    >
+    <button class="new-group-chat-submit-btn" :class="{ notAllowSubmitButton: !groupChatName || !listUsersDrop.length }"
+      v-show="create" type="submit" :disabled="!groupChatName || !listUsersDrop.length">
       {{ $t("message.group.groupCreateBtn") }}
     </button>
   </form>
@@ -103,6 +56,7 @@
 <script>
 import { ref } from "@vue/reactivity";
 import { nextTick, watch } from "@vue/runtime-core";
+import { useI18n } from 'vue-i18n';
 
 import { uploadImageToCloud, isPending } from "@composables/UploadImage";
 import { updateGroupChat } from "@composables/GroupChat";
@@ -121,6 +75,8 @@ export default {
     const groupChatPhotoURL = ref(props?.group?.groupChatPhotoURL || "");
     const isEditGroupChatName = ref(false);
 
+    const { t } = useI18n();
+
     const handleSubmitGroupChatForm = () => {
       if (listUsersDrop.value.length > 1) {
         emit(
@@ -131,13 +87,13 @@ export default {
           groupChatPhotoURL.value
         );
       } else {
-        toast.error("There must be least three user in group");
+        toast.error(t('toast.notEnoughMembers'));
       }
     };
 
     const handleKeydownInput = () => {
       if (!groupChatName.value.trim()) {
-        toast.error("Group chat name is not blank");
+        toast.error(t("toast.nameBlank"));
       } else {
         if (groupChatName.value != props.group.groupChatName) {
           emit("updateGroupChatName", groupChatName.value);
@@ -198,7 +154,7 @@ export default {
           });
         }
       } else {
-        toast.error("User is existing in group chat");
+        toast.error(t('toast.existsUser'));
       }
     };
 
@@ -214,7 +170,7 @@ export default {
         } else {
           // handle when update group chat
           if (currentUser.uid != props.group.creator.uid) {
-            toast.error("You not boss");
+            toast.error(t('toast.bossConfirm'));
             return;
           }
           listUsersDrop.value.splice(index, 1);
@@ -226,7 +182,7 @@ export default {
           });
         }
       } else {
-        toast.error("At least three users in the group");
+        toast.error(t("toast.notEnoughMembers"));
       }
     };
 

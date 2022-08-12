@@ -2,17 +2,11 @@
   <div class="chat-message-list-message">
     <div class="chat-message-show-message" ref="chatScrollBar">
       <div class="message" v-for="(message, index) in messages" :key="index">
-        <div
-          class="chat-message-send"
-          v-if="message.sender.uid == currentUser?.uid"
-        >
+        <div class="chat-message-send" v-if="message.sender.uid == currentUser?.uid">
           <div class="text-message">
             <span v-html="message.message"> </span>
-            <div class="message-tooltip tooltip-send">
-              {{ message?.createdAt?.toDate().getHours() }}:{{
-                message?.createdAt?.toDate().getSeconds()
-              }}
-              {{ message?.createdAt?.toDate().toDateString() }}
+            <div class="message-tooltip tooltip-send" v-if="message?.createdAt">
+              {{ $d(message?.createdAt?.toDate(), 'long') }}
             </div>
           </div>
         </div>
@@ -20,11 +14,8 @@
           <img :src="message.sender.photoURL" alt="" />
           <div class="text-message">
             <span v-html="message.message"> </span>
-            <div class="message-tooltip tooltip-receive">
-              {{ message?.createdAt?.toDate().getHours() }}:{{
-                message?.createdAt?.toDate().getSeconds()
-              }}
-              {{ message?.createdAt?.toDate().toDateString() }}
+            <div class="message-tooltip tooltip-receive" v-if="message?.createdAt">
+              {{ $d(message?.createdAt?.toDate(), 'long') }}
             </div>
           </div>
         </div>
@@ -68,5 +59,5 @@ export default {
 </script>
 
 <style>
-@import '@assets/style/display_message.css'; 
+@import '@assets/style/display_message.css';
 </style>
