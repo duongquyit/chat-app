@@ -19,6 +19,10 @@
   flex-wrap: wrap;
 }
 
+.message:hover .messages-option {
+  display: flex;
+}
+
 .chat-message-receive,
 .chat-message-send {
   width: 100%;
@@ -36,7 +40,7 @@
 .tooltip-send,
 .tooltip-receive {
   position: absolute;
-  background: #201f1fd1;
+  background: #585858;
   color: white;
   padding: 0.5em;
   border-radius: 3px;
@@ -60,7 +64,7 @@
   margin-top: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent transparent transparent #201f1fd1;
+  border-color: transparent transparent transparent #585858;
 }
 
 .tooltip-receive::after {
@@ -71,11 +75,15 @@
   margin-top: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent #201f1fd1 transparent transparent;
+  border-color: transparent #585858 transparent transparent;
 }
 
 .text-message:hover .message-tooltip {
   visibility: visible;
+}
+
+.message-tooltip:hover {
+  visibility: hidden !important;
 }
 
 .chat-message-receive {
@@ -93,8 +101,8 @@
   margin: 0 0.5em 0 0;
 }
 
-.chat-message-receive span,
-.chat-message-send span {
+.text-message-receive,
+.text-message-send {
   padding: 0.5em 0.7em;
   border-radius: 20px;
   font-size: 0.95em;
@@ -102,12 +110,40 @@
   text-align: left;
 }
 
-.chat-message-receive span {
+.text-message-receive {
   background: #e4e6eb;
   color: black;
 }
 
-.chat-message-send span {
+.text-message-send {
   background: #0084ff;
   color: white;
+}
+
+.messages-option {
+  display: flex;
+  align-items: center;
+  margin: 0em 0.7em;
+  position: relative;
+  display: none;
+}
+
+#message-emotion span,
+#message-option span {
+  background: none;
+  color: #80808085;
+  padding: 0.2em 0.3em;
+  font-size: 1.1em;
+  margin-left: 0.3em;
+  border-radius: 50%;
+  width: 1.5em;
+  height: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#message-emotion span:hover,
+#message-option span:hover {
+  background: #80808024;
 }

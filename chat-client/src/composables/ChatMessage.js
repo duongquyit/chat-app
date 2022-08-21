@@ -1,9 +1,13 @@
 import { socket } from '@/plugins/socket';
-import { addDoc, collection, getDocs, limit, onSnapshot, orderBy, query, serverTimestamp, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from 'firebase/firestore';
 import { ref } from 'vue';
 import { db } from '@config/firebase';
 
 const messages = ref(new Map());
+
+const PUBLIC_KEY = 'PUBLIC';
+const GROUP_KEY = 'GROUP';
+const PRIVATE_KEY = 'PRIVATE';
 
 // PUBLIC CHAT
 // collection for public message
@@ -31,7 +35,13 @@ const getPublicChatMessage = () => {
   // handle get realtime message 
   onSnapshot(q, (querySnapshot) => {
     // store message real time
-    const publicMessages = querySnapshot.docs.map(item => item.data());
+    const publicMessages = querySnapshot.docs.map(item => {
+      return {
+        ...item.data(),
+        messageId: item.id,
+        chatType: PUBLIC_KEY,
+      }
+    });
     publicMessages.reverse();
     messages.value.set('public-messages', publicMessages);
   });
@@ -45,7 +55,13 @@ const getGroupChatMessage = (groupChatId) => {
       orderBy('createdAt', 'desc'),
       limit(50));
     onSnapshot(q, (querySnapshot) => {
-      const groupMessages = querySnapshot.docs.map(item => item.data());
+      const groupMessages = querySnapshot.docs.map(item => {
+        return {
+          ...item.data(),
+          messageId: item.id,
+          chatType: GROUP_KEY,
+        }
+      });
       groupMessages.reverse();
       messages.value.set(groupChatId, groupMessages);
     });
@@ -115,7 +131,14 @@ const getPrivateChatMessage = async (chatPrivateId) => {
       orderBy("createdAt"),
       limit(50));
     onSnapshot(q, querySnapshot => {
-      const privateMessages = querySnapshot.docs.map(item => item.data());
+      const privateMessages = querySnapshot.docs.map(item => {
+        return {
+          ...item.data(),
+          messageId: item.id,
+          chatType: PRIVATE_KEY,
+          chatPrivateId,
+        }
+      });
       messages.value.set(privateMessagesRef._path.segments[2], privateMessages);
     })
   } catch (error) {
@@ -137,6 +160,68 @@ const getPrivateChatId = async (userOneId, userTwoId) => {
   }
 }
 
+// function handle message reaction
+const handleMessageReaction = async (docRef, { iconReaction, userReaction }) => {
+  const doc = await getDoc(docRef);
+  if (!doc.data().reaction?.length) {
+    await updateDoc(docRef, {
+      reaction: [{
+        icon: iconReaction,
+        user: userReaction,
+      }]
+    });
+  } else {
+    // index of reaction into message
+    const index = doc.data().reaction.findIndex(({ user }) => user.uid == userReaction.uid);
+    if (index != -1) {
+      const { icon } = doc.data().reaction[index];
+      const updateData = [...doc.data().reaction];
+      // remove icon if icon like current icon reaction
+      if (icon == iconReaction) {
+        updateData.splice(index, 1);
+        await updateDoc(docRef, {
+          reaction: updateData,
+        });
+      } else {
+        // change icon
+        updateData[index].icon = iconReaction;
+        await updateDoc(docRef, {
+          reaction: updateData,
+        });
+      }
+    } else {
+      // add reaction when user not exist in reaction list
+      await updateDoc(docRef, {
+        reaction: [
+          ...doc.data().reaction,
+          {
+            icon: iconReaction,
+            user: userReaction,
+          }
+        ]
+      });
+    }
+  }
+}
+
+const messageReaction = async ({ chatType, messageId, iconReaction, userReaction, chatPrivateId }) => {
+  if (chatType == PUBLIC_KEY || chatType == GROUP_KEY) {
+    const messageDocRef = doc(db, 'messages', messageId);
+    try {
+      await handleMessageReaction(messageDocRef, { iconReaction, userReaction });
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    const messageDocRef = doc(db, 'private-messages', 'rooms', chatPrivateId, messageId);
+    try {
+      await handleMessageReaction(messageDocRef, { iconReaction, userReaction });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
 export {
   messages,
   createPublicChatMessage,
@@ -146,5 +231,6 @@ export {
   getGroupChatMessage,
   createGroupChatMessage,
   getPrivateChatId,
+  messageReaction,
 }
 

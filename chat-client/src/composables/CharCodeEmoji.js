@@ -15,4 +15,6 @@ for (let i = 129312; i <= 129327; i++) {
   emotionsCode.push(`&#${i};`);
 }
 
-export { emotionsCode };
+const listIconMessageReaction = ['&#128517', '&#128525', '&#128546', '&#128512', '&#128544'];
+
+export { emotionsCode, listIconMessageReaction };
